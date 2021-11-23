@@ -7,9 +7,7 @@ MY_DIR=$(readlink -f `dirname "${BASH_SOURCE[0]}"`)
 os::test::junit::declare_suite_start "$MY_SCRIPT"
 
 testCreateCluster1() {
-  os::cmd::expect_success_and_text "oc create -f $MY_DIR/manifests/cluster.yaml" '"?my-spark-cluster"? created' && \
-  os::cmd::try_until_text "oc get pod -l radanalytics.io/deployment=my-spark-cluster-w -o yaml" 'ready: true' && \
-  os::cmd::try_until_text "oc get pod -l radanalytics.io/deployment=my-spark-cluster-m -o yaml" 'ready: true'
+  os::cmd::try_until_text "oc get pod  -n openshift-adp -o yaml" 'ready: true'
 }
 
 testNoPodRestartsOccurred() {
@@ -29,8 +27,8 @@ testDeleteCluster() {
 }
 
 testCreateCluster1
-testNoPodRestartsOccurred "my-spark-cluster"
-testScaleCluster
-testDeleteCluster
+# testNoPodRestartsOccurred "my-spark-cluster"
+# testScaleCluster
+# testDeleteCluster
 
 os::test::junit::declare_suite_end
