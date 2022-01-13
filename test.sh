@@ -6,29 +6,15 @@ MY_DIR=$(readlink -f `dirname "${BASH_SOURCE[0]}"`)
 
 os::test::junit::declare_suite_start "$MY_SCRIPT"
 
-testCreateCluster1() {
+helloworld() {
+  info
+  sleep 2
   os::cmd::try_until_text "oc get pod  -n openshift-adp -o yaml" 'ready: true'
+  os::cmd::expect_success "set"
+  os::cmd::expect_success "pwd"
+
 }
 
-testNoPodRestartsOccurred() {
-  _CLUSTER=${1}
-  os::cmd::try_until_text "oc get pod -l radanalytics.io/deployment=${_CLUSTER}-w -o yaml" 'restartCount: 0' && \
-  os::cmd::try_until_text "oc get pod -l radanalytics.io/deployment=${_CLUSTER}-m -o yaml" 'restartCount: 0'
-}
-
-testScaleCluster() {
-  os::cmd::expect_success_and_text 'oc patch sparkcluster my-spark-cluster -p "{\"spec\":{\"worker\": {\"instances\": 1}}}" --type=merge' '"?my-spark-cluster"? patched' || errorLogs
-  os::cmd::try_until_text "oc get pods --no-headers -l radanalytics.io/SparkCluster=my-spark-cluster | wc -l" '2'
-}
-
-testDeleteCluster() {
-  os::cmd::expect_success_and_text 'oc delete SparkCluster my-spark-cluster' '"?my-spark-cluster"? deleted' && \
-  os::cmd::try_until_text "oc get pods --no-headers -l radanalytics.io/SparkCluster=my-spark-cluster 2> /dev/null | wc -l" '0'
-}
-
-testCreateCluster1
-# testNoPodRestartsOccurred "my-spark-cluster"
-# testScaleCluster
-# testDeleteCluster
+helloworld
 
 os::test::junit::declare_suite_end
